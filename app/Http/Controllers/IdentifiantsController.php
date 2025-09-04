@@ -413,7 +413,7 @@ public function import(Request $request)
             ->createDatabase();
     } catch (\Throwable $e) {
         Log::error("Erreur d'initialisation Firebase : " . $e->getMessage());
-        return view('erreurs.firebase', ['message' => "Impossible de se connecter à Firebase."]);
+        
     }
 
     foreach ($identifiants as $identifiant) {
