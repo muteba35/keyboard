@@ -839,8 +839,8 @@ return $snapshot->exists() ? ($snapshot->getValue()['fragment3'] ?? null) : null
 
     if (!$existe) {
         $message = $result['est_faible']
-            ? "🔧 {$contexte} du {$now} — Le mot de passe pour le service \"{$identifiant->service}\" (utilisateur : {$identifiant->nom_utilisateur}) est faible : " . implode(', ', $result['messages']) . " — Junior Muteba"
-            : "🔧 {$contexte} du {$now} — Le mot de passe pour \"{$identifiant->service}\" (utilisateur : {$identifiant->nom_utilisateur}) est fort et sécurisé. — Junior Muteba";
+            ? " {$contexte} du {$now} — Le mot de passe pour le service \"{$identifiant->service}\" (utilisateur : {$identifiant->nom_utilisateur}) est faible : " . implode(', ', $result['messages']) . " — Junior Muteba"
+            : " {$contexte} du {$now} — Le mot de passe pour \"{$identifiant->service}\" (utilisateur : {$identifiant->nom_utilisateur}) est fort et sécurisé. — Junior Muteba";
 
         Notification::create([
             'user_id' => $userId,

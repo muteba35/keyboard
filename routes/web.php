@@ -53,6 +53,8 @@ Route::post('/securite', [IdentifiantsController::class, 'tester'])->name('secur
 });
 
 
+
+
  Route::get('/identifiant', [IdentifiantsController::class, 'parSite']);
 
 
