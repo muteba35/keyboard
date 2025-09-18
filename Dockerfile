@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json vite.config.* ./
 RUN npm install
 
-# Copier le reste du projet et build Vite
+# Copier le reste du projet et builder Vite
 COPY . .
 RUN npm run build
 
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     zip unzip git curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    && docker-php-ext-install gd pdo pdo_mysql zip
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -38,10 +38,10 @@ COPY . .
 # Copier les assets buildés par Vite
 COPY --from=node_builder /app/public/build ./public/build
 
-# Créer .env si absent
+# Créer le fichier .env si absent
 RUN cp .env.example .env || true
 
-# Installer dépendances Laravel
+# Installer les dépendances Laravel
 RUN composer install --no-dev --optimize-autoloader
 
 # Générer la clé Laravel
