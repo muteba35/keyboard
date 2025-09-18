@@ -22,9 +22,11 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libzip-dev \
     zip unzip git curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql zip
+    && docker-php-ext-install gd pdo pdo_mysql zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -38,10 +40,10 @@ COPY . .
 # Copier les assets buildés par Vite
 COPY --from=node_builder /app/public/build ./public/build
 
-# Créer le fichier .env si absent
+# Créer .env si absent
 RUN cp .env.example .env || true
 
-# Installer les dépendances Laravel
+# Installer dépendances Laravel
 RUN composer install --no-dev --optimize-autoloader
 
 # Générer la clé Laravel
@@ -50,7 +52,7 @@ RUN php artisan key:generate
 # Donner les permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Exposer le port Laravel par défaut
+# Exposer le port du serveur Laravel
 EXPOSE 8000
 
 # Lancer le serveur intégré Laravel
