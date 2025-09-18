@@ -9,14 +9,15 @@ RUN npm run build
 # Étape 2 : Image PHP avec Composer + Nginx
 FROM php:8.2-fpm
 
-# Installer dépendances système et Nginx
+# Installer dépendances système + extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    zip unzip git curl nginx \
+    zip unzip git curl nginx libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    && docker-php-ext-install gd pdo pdo_mysql zip bcmath opcache \
+    && docker-php-ext-enable gd zip
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
