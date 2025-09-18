@@ -15,7 +15,6 @@ RUN npm run build
 # -----------------------------
 FROM php:8.2-cli
 
-# Installer extensions PHP et dépendances système
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev libzip-dev \
     zip unzip git curl \
@@ -35,23 +34,23 @@ COPY . .
 # Copier les assets buildés par Vite
 COPY --from=node_builder /app/public/build ./public/build
 
-# Copier l'env spécifique Docker et le renommer en .env
-COPY .env.docker .env
+# Copier le fichier Firebase dans le conteneur
+COPY storage/app/firebase/laravelpwd-29777-firebase-adminsdk-fbsvc-68dc463ba8.json ./storage/app/firebase/
 
+# Copier le fichier .env.docker comme .env
+COPY .env.docker .env
 # Installer dépendances Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Générer clé Laravel si elle n'existe pas
+# Générer clé Laravel
 RUN php artisan key:generate
 
-# Exécuter les migrations (uniquement celles qui n'ont pas encore été exécutées)
+# Exécuter seulement les migrations déjà présentes
 RUN php artisan migrate --force
 
-# Donner permissions aux dossiers critiques
+# Donner permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Exposer le port Laravel
 EXPOSE 8000
 
-# Lancer le serveur intégré Laravel
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD php artisan serve --host=0.0.0.0 --port=8000
