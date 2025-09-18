@@ -26,10 +26,6 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 COPY . .
-# Copier le fichier Firebase dans le conteneur
-COPY storage/app/firebase/laravelpwd-29777-firebase-adminsdk-fbsvc-68dc463ba8.json ./storage/app/firebase/
-
-# Copier les assets buildés
 COPY --from=node_builder /app/public/build ./public/build
 
 # Créer .env si absent
