@@ -34,11 +34,9 @@ COPY . .
 # Copier les assets buildés par Vite
 COPY --from=node_builder /app/public/build ./public/build
 
-# Copier le fichier Firebase dans le conteneur
-COPY storage/app/firebase/laravelpwd-29777-firebase-adminsdk-fbsvc-68dc463ba8.json ./storage/app/firebase/
+# Créer .env si absent
+RUN cp .env.example .env || true
 
-# Copier le fichier .env.docker comme .env
-COPY .env.docker .env
 # Installer dépendances Laravel
 RUN composer install --no-dev --optimize-autoloader
 
