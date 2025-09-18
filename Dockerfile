@@ -4,9 +4,11 @@
 FROM node:18 AS node_builder
 WORKDIR /app
 
+# Copier package.json et vite.config
 COPY package*.json vite.config.* ./
 RUN npm install
 
+# Copier le reste du projet et builder Vite
 COPY . .
 RUN npm run build
 
@@ -20,19 +22,22 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libzip-dev \
     zip unzip git curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql zip
+    && docker-php-ext-install gd pdo pdo_mysql zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Définir le dossier de travail Laravel
 WORKDIR /var/www/html
 
-# Copier projet Laravel
+# Copier le projet Laravel
 COPY . .
 
-# Copier assets buildés par Vite
+# Copier les assets buildés par Vite
 COPY --from=node_builder /app/public/build ./public/build
 
 # Créer .env si absent
@@ -41,7 +46,7 @@ RUN cp .env.example .env || true
 # Installer dépendances Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Générer clé Laravel
+# Générer la clé Laravel
 RUN php artisan key:generate
 
 # Créer les tables pour les sessions et le cache
@@ -53,5 +58,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Exposer le port
 EXPOSE 8000
 
-# Lancer le serveur Laravel
+# Lancer le serveur intégré Laravel
 CMD php artisan serve --host=0.0.0.0 --port=8000
