@@ -22,16 +22,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd pdo pdo_mysql zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Définir le dossier de travail Laravel
 WORKDIR /var/www/html
-
-# Copier le projet Laravel
 COPY . .
-
-# Copier les assets buildés par Vite
 COPY --from=node_builder /app/public/build ./public/build
 
 # Créer .env si absent
