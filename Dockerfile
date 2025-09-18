@@ -36,11 +36,28 @@ RUN composer install --no-dev --optimize-autoloader
 # Donner les permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Supprimer la config Nginx par défaut
+# Supprimer les configs Nginx par défaut
 RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf
 
-# Copier ta config Nginx personnalisée
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+# Créer une config Nginx directement dans le Dockerfile
+RUN echo 'server { \
+    listen 80; \
+    index index.php index.html; \
+    server_name localhost; \
+    root /var/www/html/public; \
+    location / { \
+        try_files $uri $uri/ /index.php?$query_string; \
+    } \
+    location ~ \.php$$ { \
+        include snippets/fastcgi-php.conf; \
+        fastcgi_pass 127.0.0.1:9000; \
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; \
+        include fastcgi_params; \
+    } \
+    location ~ /\.ht { \
+        deny all; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
 # Exposer le port
 EXPOSE 80
