@@ -42,7 +42,7 @@ RUN composer install --no-dev --optimize-autoloader
 # Générer clé Laravel
 RUN php artisan key:generate
 
-# Exécuter seulement les migrations déjà présentes
+# Exécuter uniquement les migrations déjà présentes
 RUN php artisan migrate --force
 
 # Donner permissions
