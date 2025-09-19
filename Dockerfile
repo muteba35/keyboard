@@ -27,9 +27,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
 
-# Si jamais storage/ est ignoré, ajoute ce COPY ciblé :
-COPY storage/app/firebase/laravelpwd-29777-firebase-adminsdk-fbsvc-68dc463ba8.json ./storage/app/firebase/
+# Copier tout le dossier storage (important pour ton fichier Firebase)
+COPY storage ./storage
 
+# Copier les assets buildés
 COPY --from=node_builder /app/public/build ./public/build
 
 # Créer .env si absent
