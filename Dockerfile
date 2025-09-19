@@ -15,6 +15,7 @@ RUN npm run build
 # -----------------------------
 FROM php:8.2-cli
 
+# Installer les extensions nécessaires et outils
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev libzip-dev \
     zip unzip git curl \
@@ -22,31 +23,33 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd pdo pdo_mysql zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Copier composer depuis l'image officielle
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 COPY . .
 
-# Copier tout le dossier storage (important pour ton fichier Firebase)
+# Copier le dossier storage (Firebase credentials inclus)
 COPY storage ./storage
+
+# Copier le .env adapté pour Docker
+COPY .env.docker .env
 
 # Copier les assets buildés
 COPY --from=node_builder /app/public/build ./public/build
 
-# Créer .env si absent
-RUN cp .env.example .env || true
-
-# Installer dépendances Laravel
+# Installer les dépendances Laravel
 RUN composer install --no-dev --optimize-autoloader
 
 # Générer clé Laravel
 RUN php artisan key:generate
 
-# Exécuter seulement les migrations déjà présentes
-RUN php artisan migrate --force
-
 # Donner permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Exécuter seulement les migrations si la DB est prête
+# Note : à lancer manuellement après que MySQL soit accessible
+# RUN php artisan migrate --force
 
 EXPOSE 8000
 
