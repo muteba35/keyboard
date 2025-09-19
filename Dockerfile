@@ -27,11 +27,11 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
 
-# Copier .env (très important, sinon Laravel n'a pas les variables)
-COPY .env .env
-
 # Copier tout le dossier storage (Firebase credentials inclus)
 COPY storage ./storage
+
+# Copier ton fichier env.local et le renommer en .env dans le conteneur
+COPY env.local .env
 
 # Copier les assets buildés
 COPY --from=node_builder /app/public/build ./public/build
@@ -42,7 +42,7 @@ RUN composer install --no-dev --optimize-autoloader
 # Générer clé Laravel
 RUN php artisan key:generate
 
-# Exécuter uniquement les migrations déjà présentes
+# Exécuter seulement les migrations déjà présentes
 RUN php artisan migrate --force
 
 # Donner permissions
