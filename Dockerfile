@@ -30,11 +30,11 @@ COPY . .
 # Copier tout le dossier storage (important pour ton fichier Firebase)
 COPY storage ./storage
 
+# Copier ton vrai fichier .env
+COPY .env .env
+
 # Copier les assets buildés
 COPY --from=node_builder /app/public/build ./public/build
-
-# Créer .env si absent
-RUN cp .env.example .env || true
 
 # Installer dépendances Laravel
 RUN composer install --no-dev --optimize-autoloader
