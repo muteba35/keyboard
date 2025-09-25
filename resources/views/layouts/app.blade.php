@@ -16,7 +16,7 @@
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 
         <!-- Scripts -->
-        @vite(['resources/js/datatables-simple-demo.js', 'resources/js/scripts.js', 'resources/css/junior.css'])
+        @vite(['resources/css/junior.css'])
     </head>
       <body class="sb-nav-fixed">
             @include('layouts.navigation')
